@@ -39,6 +39,13 @@ jobs:
           # Upload entire repository
           path: build
           if-no-files-found: error
+      - name: Set up EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          toke: $ {{ secrets.EXPO_TOKEN }}
+      - name:
+        run: eas build --platform android --non-interactive --no-wait
   
   # Deploy job
   deploy:
@@ -56,4 +63,3 @@ jobs:
       - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v2
-
