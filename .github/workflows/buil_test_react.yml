@@ -37,13 +37,13 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
-          path: build
+          path: dist
           if-no-files-found: error
       - name: Set up EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          toke: $ {{ secrets.EXPO_TOKEN }}
+          token: $ {{ secrets.EXPO_TOKEN }}
       - name:
         run: eas build --platform android --non-interactive --no-wait
   
