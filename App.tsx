@@ -1,10 +1,38 @@
+import { useState, useEffect } from 'react';
+import { signup } from './auth_signup_password';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const checkAuth = async () => {
+    const user = await signup(email, password);
+    console.log(user);
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <Text>Email</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Text>Password</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your password"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <Button
+        title="Sign In"
+        onPress={() => checkAuth()}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -17,4 +45,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  input: {
+    borderColor: 'black',
+    borderWidth: 1,
+    width: 200,
+    padding: 10,
+  }
 });
