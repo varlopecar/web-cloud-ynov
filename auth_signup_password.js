@@ -5,6 +5,7 @@ const auth = getAuth();
 
 export const signup = async (email, password) => {
     try {
+        auth.useDeviceLanguage();
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log("User signed up successfully", user);
