@@ -30,6 +30,7 @@ export default function App() {
         onChangeText={setPassword}
       />
       <Button
+        style={styles.button}
         title="Sign In"
         onPress={() => checkAuth()}
       />
@@ -48,7 +49,14 @@ const styles = StyleSheet.create({
   input: {
     borderColor: 'black',
     borderWidth: 1,
+    borderRadius: 5,
     width: 200,
     padding: 10,
+    margin: 10,
+  },
+  button: {
+    width: 200,
+    padding: 10,
+    margin: 10,
   }
 });
