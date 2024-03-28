@@ -1,7 +1,7 @@
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 
 const auth = getAuth();
-const verifier = window.recaptchaVerifier;
+const appVerifier = window.recaptchaVerifier;
 
 export const signin = async (phoneNumber) => {
     try {
