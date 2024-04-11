@@ -129,7 +129,7 @@ export default function App() {
           onPress={handleSignInWithPhone}
         />
       </View>
-      <div className='recaptcha-container'></div>
+      <div id='recaptcha-container'></div>
 
       <StatusBar style="auto" />
     </View>

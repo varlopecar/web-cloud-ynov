@@ -10,10 +10,13 @@ export const signin = async (phoneNumber) => {
             'size': 'invisible',
             'callback': (response) => {
                 console.log("Recaptcha response: ", response);
+            },
+            'expired-callback': () => {
+                console.log("Recaptcha expired");
             }
         });
         const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
-        console.log("Confirmation result: ", confirmationResult);
+        window.confirmationResult = confirmationResult;
         return confirmationResult;
     } catch (error) {
         console.error(error);
