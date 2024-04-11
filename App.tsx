@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { signup } from './firebase/auth_signup_password';
 import { signin } from './firebase/auth_phone_signin';
 import { signInWithGithub } from './firebase/auth_github';
+import { authPhoneVerifyCode } from './firebase/auth_phone_verify_code';
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [code, setCode] = useState('');
 
   const handleSignIn = async () => {
     const isValid = await validateForm();
@@ -32,6 +34,16 @@ export default function App() {
   const handleSignInWithPhone = async () => {
     try {
       const response = await signin(phoneNumber);
+      console.log(response);
+    } catch (error: any) {
+      const errorMessage = error.message;
+      setMessage(errorMessage);
+    }
+  }
+
+  const verifyCode = async (code: string) => {
+    try {
+      const response = await authPhoneVerifyCode(code);
       console.log(response);
     } catch (error: any) {
       const errorMessage = error.message;
@@ -101,18 +113,22 @@ export default function App() {
           value={password}
           onChangeText={setPassword}
         />
-        <Button
-          title="Sign In"
+        <Pressable
           onPress={handleSignIn}
-        />
+          style={styles.button}
+        >
+          <Text>Sign Up</Text>
+        </Pressable>
         {
           message ? <Text>{message}</Text> : null
         }
 
-        <Button
-          title="Sign In with Github"
+        <Pressable
           onPress={signInWithGithub}
-        />
+          style={styles.button}
+        >
+          <Text>Sign In with Github</Text>
+        </Pressable>
       </View>
       <View>
         <Text
@@ -124,12 +140,26 @@ export default function App() {
           value={phoneNumber}
           onChangeText={setPhoneNumber}
         />
-        <Button
-          title="Sign In with Phone"
+        <Pressable
           onPress={handleSignInWithPhone}
-        />
+          style={styles.button}
+        >
+          <Text>Sign In with Phone</Text>
+        </Pressable>
+        <div id='recaptcha-container'></div>
+        <Text>Code</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setCode}
+          value={code}
+        ></TextInput>
+        <Pressable
+          onPress={() => verifyCode(code)}
+          style={styles.button}
+        >
+          <Text>Check Code !</Text>
+        </Pressable>
       </View>
-      <div id='recaptcha-container'></div>
 
       <StatusBar style="auto" />
     </View>
@@ -156,5 +186,11 @@ const styles = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center',
+  },
+  button: {
+    backgroundColor: 'lightblue',
+    padding: 10,
+    borderRadius: 5,
+    margin: 10,
   }
 });
