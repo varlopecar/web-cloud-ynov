@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { signup } from './auth_signup_password';
-import { signin } from './auth_phone_signin';
-import { signInWithGithub } from './auth_github';
+import { signup } from './firebase/auth_signup_password';
+import { signin } from './firebase/auth_phone_signin';
+import { signInWithGithub } from './firebase/auth_github';
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -78,41 +78,58 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text
-        style={styles.textCenter}
-      >Sign Up</Text>
-      <Text
-        style={styles.textCenter}
-      >Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <Text
-        style={styles.textCenter}
-      >Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button
-        title="Sign In"
-        onPress={handleSignIn}
-      />
-      {
-        message ? <Text>{message}</Text> : null
-      }
+      <View>
+        <Text
+          style={styles.textCenter}
+        >Sign Up</Text>
+        <Text
+          style={styles.textCenter}
+        >Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <Text
+          style={styles.textCenter}
+        >Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Button
+          title="Sign In"
+          onPress={handleSignIn}
+        />
+        {
+          message ? <Text>{message}</Text> : null
+        }
 
-      <Button
-        title="Sign In with Github"
-        onPress={signInWithGithub}
-      />
-
+        <Button
+          title="Sign In with Github"
+          onPress={signInWithGithub}
+        />
+      </View>
+      <View>
+        <Text
+          style={styles.textCenter}
+        >Sign In with Phone</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your phone number"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+        />
+        <Button
+          title="Sign In with Phone"
+          onPress={handleSignInWithPhone}
+        />
+      </View>
+      <div className='recaptcha-container'></div>
 
       <StatusBar style="auto" />
     </View>
@@ -123,6 +140,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row',
+    gap: 10,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
