@@ -3,6 +3,7 @@ import { signup } from '../../firebase/auth_signup_password';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { styles } from '../../styles';
 import { signInWithGithub } from '../../firebase/auth_github';
+import { signinwithmail } from '../../firebase/auth_sigin_email';
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -94,6 +95,7 @@ const SignIn = () => {
             >
                 <Text>Sign Up</Text>
             </Pressable>
+
             {
                 message ? <Text>{message}</Text> : null
             }
@@ -102,6 +104,13 @@ const SignIn = () => {
                 style={styles.button}
             >
                 <Text>Sign In with Github</Text>
+            </Pressable>
+
+            <Pressable
+                onPress={() => signinwithmail(email, password)}
+                style={styles.button}
+            >
+                <Text>Sign In with Email</Text>
             </Pressable>
         </View>
     )

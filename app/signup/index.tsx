@@ -5,7 +5,6 @@ import { authPhoneVerifyCode } from '../../firebase/auth_phone_verify_code';
 import { signin } from '../../firebase/auth_phone_signin';
 
 const SingUp = () => {
-
   const [message, setMessage] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [code, setCode] = useState('');
@@ -60,7 +59,6 @@ const SingUp = () => {
       >
         <Text>Check Code !</Text>
       </Pressable>
-
       {
         message ? <Text>{message}</Text> : null
       }
