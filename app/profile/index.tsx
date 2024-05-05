@@ -1,13 +1,13 @@
 import '../../firebaseConfig'
 import React, { useEffect, useState } from 'react'
-import { getAuth } from 'firebase/auth';
+import { getAuth, User } from 'firebase/auth';
 import { Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 
 const auth = getAuth();
 
 const Profile = () => {
-    const [user, setUser] = useState<any | null>(null)
+    const [user, setUser] = useState<User | null>(null)
 
     useEffect(() => {
         auth.onAuthStateChanged((user) => {
@@ -39,6 +39,9 @@ const Profile = () => {
                         </Pressable>
 
                         <Text>UID: {user.uid}</Text>
+
+                        <Text>Update your profile</Text>
+
                     </View>
                 ) : (
                     <View>
