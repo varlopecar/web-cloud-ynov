@@ -1,69 +1,139 @@
-import React, { useState } from 'react'
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { styles } from '../../styles';
-import { authPhoneVerifyCode } from '../../firebase/auth_phone_verify_code';
-import { signin } from '../../firebase/auth_phone_signin';
+import React, { useState } from 'react';
+import { Image, Pressable, Text, TextInput, View, StyleSheet } from 'react-native';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import { uploadToFirebase } from '../../firebase/auth_upload_firebase';
+import { updateUserPhotoUrl } from '../../firebase/auth_update_photo_url';
 
-const SingUp = () => {
+const auth = getAuth();
+const storage = getStorage();
+
+const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [code, setCode] = useState('');
+  const router = useRouter();
 
-  const handleSignInWithPhone = async () => {
+  const handleSignUp = async () => {
     try {
-      const response = await signin(phoneNumber);
-      console.log(response);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: name, photoURL: null });
+      if (image) {
+        await updateUserPhotoUrl(image);
+      }
+      setMessage('User registered successfully');
+      router.replace('/(tabs)/home');
     } catch (error: any) {
-      const errorMessage = error.message;
-      setMessage(errorMessage);
+      setMessage('Error signing up: ' + error.message);
     }
-  }
+  };
 
-  const verifyCode = async (code: string) => {
-    try {
-      const response = await authPhoneVerifyCode(code);
-      console.log(response);
-    } catch (error: any) {
-      const errorMessage = error.message;
-      setMessage(errorMessage);
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri as any);
+
+      const { uri } = result.assets[0];
+      const fileName = uri.split("/").pop();
+      const uploadResp = await uploadToFirebase(uri, fileName);
+      let res = await updateUserPhotoUrl(uploadResp);
+      if (res) {
+        console.log(res);
+      } else {
+        console.log('Error updating photo')
+      };
     }
-  }
+  };
+
 
   return (
     <View style={styles.container}>
-      <Text
-        style={styles.textCenter}
-      >Sign In with Phone</Text>
+      <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your phone number"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
       />
-      <Pressable
-        onPress={handleSignInWithPhone}
-        style={styles.button}
-      >
-        <Text>Sign In with Phone</Text>
-      </Pressable>
-      <div id='recaptcha-container'></div>
-      <Text>Code</Text>
       <TextInput
         style={styles.input}
-        onChangeText={setCode}
-        value={code}
-      ></TextInput>
-      <Pressable
-        onPress={() => verifyCode(code)}
-        style={styles.button}
-      >
-        <Text>Check Code !</Text>
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <Pressable onPress={pickImage} style={styles.button}>
+        <Text style={styles.buttonText}>Pick Profile Image</Text>
       </Pressable>
-      {
-        message ? <Text>{message}</Text> : null
-      }
+      <Pressable onPress={handleSignUp} style={styles.button}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </Pressable>
+      {message ? <Text>{message}</Text> : null}
+      <Text>Already have an account?</Text>
+      <Pressable onPress={() => router.replace('/sign-in')}>
+        <Text style={styles.link}>Sign In</Text>
+      </Pressable>
     </View>
-  )
-}
+  );
+};
 
-export default SingUp
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f4f4f4',
+  },
+  input: {
+    height: 40,
+    width: '80%',
+    margin: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '80%',
+    marginVertical: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  link: {
+    color: '#007bff',
+    marginTop: 15,
+  }
+});
+
+export default SignUp;
